@@ -1,5 +1,4 @@
 # Driver-Drowsiness-System
-# Driver Drowsiness Detection System: Project Overview
 
 ## 1. Problem Statement
 Drowsy driving is a leading cause of severe road accidents. The challenge is to build a highly responsive, real-time computer vision system that can accurately detect driver fatigue before an accident occurs. The system must be robust enough to distinguish between normal behavior (like a quick blink or looking down at the dashboard) and actual dangerous fatigue (microsleeps, sustained yawning, or falling asleep at the wheel). 
