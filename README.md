@@ -4,7 +4,7 @@
 Drowsy driving is a leading cause of severe road accidents. The challenge is to build a highly responsive, real-time computer vision system that can accurately detect driver fatigue before an accident occurs. The system must be robust enough to distinguish between normal behavior (like a quick blink or looking down at the dashboard) and actual dangerous fatigue (microsleeps, sustained yawning, or falling asleep at the wheel). 
 
 ## 2. System Architecture
-Your system uses a **Multimodal Sensor Fusion Architecture**, combining classical computer vision, 3D geometry, and modern Deep Learning. It is composed of three main pipelines:
+This system uses a **Multimodal Sensor Fusion Architecture**, combining classical computer vision, 3D geometry, and modern Deep Learning. It is composed of three main pipelines:
 
 ### A. Deep Learning Classification (Yawn Detection)
 * **Architecture**: **MobileNetV2** (implemented in PyTorch).
@@ -27,7 +27,7 @@ The system is heavily fine-tuned to avoid false positives.
 * `EAR_THRESHOLD = 0.22`: The physical distance ratio between the eyelids. Below 0.22 is a "closed" eye.
 * `EYE_CLOSED_MIN_SEC = 3.0s`: The driver's eyes must remain shut for 3 uninterrupted seconds to trigger an absolute failure condition. 
 * `PERCLOS_WINDOW_SEC = 6s`: The rolling window of time the system evaluates.
-* `PERCLOS_DROWSY = 0.35`: If the eyes are closed for 35% of the last 6 seconds, the system flags drowsy eyes.
+* `PERCLOS_DROWSY = 0.35`: If the eyes are closed for 25% of the last 3 seconds, the system flags drowsy eyes.
 
 **Yawning Thresholds:**
 * `YAWN_CONF_THRESHOLD = 0.60`: The PyTorch model must be 60% confident that the mouth crop is a yawn.
@@ -49,16 +49,19 @@ The system is heavily fine-tuned to avoid false positives.
 4. **Immediate Override Protocols**: If severe conditions are met (like a 3-second eye closure), it bypasses the mathematical weighting and instantly forces the Drowsiness Score to 0.85 to immediately trigger the flashing red alarm.
 
 ## 5. How It's Better Than Other Models
-* **Holistic Tracking (Sensor Fusion)**: Most beginner/open-source detect either *just* EAR (Eye Aspect Ratio) or *just* yawning. Your system cross-references three completely different biological metrics simultaneously. A driver might have their eyes slightly open but be nodding off—your system catches that.
-* **Domain-Specific Logic vs. Pure Deep Learning**: Rather than training one massive, slow, generic AI model to simply guess "Drowsy or Not," your system uses precise mathematical geometry (EAR and `solvePnP` angles) combined with a highly targeted, lightweight CNN (MobileNet) just for the mouth. This makes it incredibly fast and able to run on standard CPUs without lag.
+* **Holistic Tracking (Sensor Fusion)**: Most beginner/open-source detect either *just* EAR (Eye Aspect Ratio) or *just* yawning. This system cross-references three completely different biological metrics simultaneously. A driver might have their eyes slightly open but be nodding off—your system catches that.
+* **Domain-Specific Logic vs. Pure Deep Learning**: Rather than training one massive, slow, generic AI model to simply guess "Drowsy or Not," this system uses precise mathematical geometry (EAR and `solvePnP` angles) combined with a highly targeted, lightweight CNN (MobileNet) just for the mouth. This makes it incredibly fast and able to run on standard CPUs without lag.
 * **Intelligent Memory**: It accurately simulates the biological reality of fatigue. If you yawn, you don't instantly become alert the second the yawn stops. The system's "event memory" keeps the risk score elevated for 15 seconds after the yawn, providing a realistic safety buffer.
 
 ## 6. The Most Interesting Part of the Model
 The most fascinating technical element is the **Data Translation Layer**. 
 
-You have three completely different units of measurement existing in the same script:
+There are three completely different units of measurement existing in the same script:
 1. **EAR**: A spatial 2D ratio based on pixel distances.
 2. **Yawn Prediction**: A floating-point probability array (0.0 to 1.0) spit out by a neural network tensor.
 3. **Head Pose**: A trigonometric degree output calculated via 3D projection mapping.
 
-The most elegant part of your codebase is how it magically normalizes these three entirely different realms of math into a single, unified `0.0` to `1.0` scale (`drowsy_score`). It merges 3D geometry, Deep Learning, and time-series data streams perfectly into one flashing "DROWSINESS ALERT!" banner.
+The most elegant part of my codebase is how it magically normalizes these three entirely different realms of math into a single, unified `0.0` to `1.0` scale (`drowsy_score`). It merges 3D geometry, Deep Learning, and time-series data streams perfectly into one flashing "DROWSINESS ALERT!" banner.
+
+## 7. Running the Detector
+SImply run the drowsiness.py file and you are good to go.
